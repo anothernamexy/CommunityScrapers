@@ -74,6 +74,8 @@ include_tag = True
 tag_prefix = prefix
 
 # Scrape the source material as tag (name of anime/game): Kantai Collection, Idolmaster: Cinderella Girls, etc.
+
+set_parody_as_disambiguation = False
 include_parody = True
 parody_prefix = "parody:"
 
@@ -199,14 +201,14 @@ def performerByURL(url, result={}):
 
     # left table, works for link and plain text fields, return result list
     def parse_left(field):
-        template = "//table//th[text()='{}' or a/text()='{}']/following-sibling::td[1]/text()"
+        template = "//table//th[text()='{0}' or a/text()='{0}']/following-sibling::td/a/text()"
         return tree.xpath(template.format(field))
 
     result["tags"] = additional_tags
     if include_tag:
         result["tags"] += [{"name": tag_prefix + tag.strip()} for tag in parse_left("Tags ")]
     if include_parody:
-        result["tags"] += [{"name": parody_prefix + tag.strip()} for tag in parse_left("From")]
+        result["tags"] += [{"name": parody_prefix + tag.strip()} for tag in parse_left("Primary Assignment")]
     if include_blood_type:
         result["tags"] += [{"name": blood_type_prefix + tag.strip()} for tag in parse_left("Blood Type")]
     if include_race:
@@ -230,11 +232,15 @@ def performerByURL(url, result={}):
         hip = hip[0].strip().replace("cm", "")
         result["measurements"] = "{}-{}-{}".format(bust, waist, hip)
     result["height"] = next(iter(parse_left("Height")), "").strip().replace("cm", "")
+    if set_parody_as_disambiguation:
+        result["disambiguation"] = parse_left("Primary Assignment")[0].strip()
+    else:
+        result["disambiguation"] = parse_left("Media Type")[0].strip().capitalize()
 
     # middle/right table, reverse result list to prefer official appearance, return result or empty string
     def parse_right(field):
-        template = "//table//th[text()='{}']/following-sibling::td/text()"
-        return next(reversed(tree.xpath(template.format(field))), "").strip().replace("Unknown", "")
+        template = "//table//th[text()='{}' or a/text()='{}']/following-sibling::td[1]/text()"
+        return next(reversed(tree.xpath(template.format(field, field))), "").strip().replace("Unknown", "")
 
     # should be tagged anyway if yes
     # if parse_right("Animal Ears") == "Yes":
