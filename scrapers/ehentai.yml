@@ -45,7 +45,7 @@ xPathScrapers:
           - parseDate: 2006-01-02
       Tags:
         Name:
-          selector: //div[@id="taglist"]//td//div[@class="gt" or @class="gtl"]/a[starts-with(@id, "ta_parody:") or starts-with(@id, "ta_female:") or starts-with(@id, "ta_mixed:") or starts-with(@id, "ta_other:")]/text()
+          selector: //div[@id="taglist"]//td//div[@class="gt" or @class="gtl"]/a[starts-with(@id, "ta_parody:") or starts-with(@id, "ta_female:") or starts-with(@id, "ta_mixed:") or starts-with(@id, "ta_other:")]/text() | //div[@id="gdc"]/div[starts-with(@class, "cs c")]/text()
       Performers:
         Name: //div[@id="taglist"]//td//div[@class="gt" or @class="gtl"]/a[starts-with(@id, "ta_character:") or starts-with(@id, "ta_cosplayer:")]/text()
       Studio:
