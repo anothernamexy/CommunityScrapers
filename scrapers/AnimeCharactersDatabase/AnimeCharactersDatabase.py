@@ -75,9 +75,9 @@ tag_prefix = prefix
 
 # Scrape the source material as tag (name of anime/game): Kantai Collection, Idolmaster: Cinderella Girls, etc.
 
-set_parody_as_disambiguation = False
+set_parody_as_disambiguation = True
 include_parody = True
-parody_prefix = "parody:"
+parody_prefix = ""
 
 # Scrape Zodiac Sign as tag: Libra ♎, Sagittarius ♐, etc.
 include_sign = True
@@ -105,6 +105,7 @@ apparent_age_prefix = prefix + "Apparent "
 # Scrape Hair Length as tag: To Shoulders, To Neck, Past Waist, etc.
 include_hair_length = True
 hair_length_prefix = prefix + "Hair "
+
 
 
 # ---------------------------------------
@@ -198,6 +199,8 @@ def performerByURL(url, result={}):
             "//h3[@id='section001_summary']/following-sibling::p[contains(a/@href,'character')]//text()") if
                                                          s.strip()]))
     result["image"] = next(iter(tree.xpath("//meta[@property='og:image']/@content")), "")
+    result["aliases"] = next(iter(tree.xpath("//th[text()='Other Names']/following-sibling::td[1]/text()")), "")
+
 
     # left table, works for link and plain text fields, return result list
     def parse_left(field):
@@ -232,11 +235,13 @@ def performerByURL(url, result={}):
         hip = hip[0].strip().replace("cm", "")
         result["measurements"] = "{}-{}-{}".format(bust, waist, hip)
     result["height"] = next(iter(parse_left("Height")), "").strip().replace("cm", "")
+
     if set_parody_as_disambiguation:
         result["disambiguation"] = parse_left("Primary Assignment")[0].strip()
+        
     else:
         result["disambiguation"] = parse_left("Media Type")[0].strip().capitalize()
-
+    
     # middle/right table, reverse result list to prefer official appearance, return result or empty string
     def parse_right(field):
         template = "//table//th[text()='{}' or a/text()='{}']/following-sibling::td[1]/text()"
