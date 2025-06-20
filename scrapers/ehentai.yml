@@ -43,6 +43,8 @@ xPathScrapers:
             - regex: (\d{4}-\d{2}-\d{2})(.+)
               with: $1
           - parseDate: 2006-01-02
+      # Rating:
+      #   selector: //td[@id="rating_label" and contains(text(), "Average:")]/text()'))
       Tags:
         Name:
           selector: //div[@id="taglist"]//td//div[@class="gt" or @class="gtl"]/a[starts-with(@id, "ta_parody:") or starts-with(@id, "ta_female:") or starts-with(@id, "ta_mixed:") or starts-with(@id, "ta_other:")]/text() | //div[@id="gdc"]/div[starts-with(@class, "cs c")]/text()
